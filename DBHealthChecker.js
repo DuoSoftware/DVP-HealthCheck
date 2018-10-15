@@ -1,6 +1,6 @@
 const async = require('async');
 
-class HealthChecker{
+class HealthChecker {
 
     /*
     handler{
@@ -11,53 +11,54 @@ class HealthChecker{
 
      */
 
-    constructor(server, handlers){
-       this.server = server;
-       this.handlers = handlers;
+    constructor(server, handlers) {
+        this.server = server;
+        this.handlers = handlers;
 
-       if(handlers){
+        if (handlers) {
 
-           let {pg: pg, redis: redis} = handlers;
-           this.functions = [];
+            let {pg: pg, redis: redis} = handlers;
+            this.functions = [];
 
-           if(pg){
+            if (pg) {
 
-               this.functions.push(  function (callback) {
-                   pg.authenticate().then((res) => {
+                this.functions.push(function (callback) {
+                    pg.authenticate().then((res) => {
 
-                       callback(null, res);
+                        callback(null, res);
 
-                   }).catch(function (err) {
+                    }).catch(function (err) {
 
-                       callback(err);
+                        callback(err);
 
-                   });
-               })
+                    });
+                })
 
-           }
+            }
 
-           if(redis) {
+            if (redis) {
 
-               this.functions.push(function (callback) {
+                this.functions.push(function (callback) {
 
-                   redis.ping(function (err, result) {
+                    redis.ping(function (err, result) {
+                        callback(err, result);
 
-                       callback(err, result);
+                    });
 
-                   });
-
-               });
-           }
-       }
+                });
+            }
+        }
 
     }
 
-    Initiate(){
 
-        if(this.server) {
+    Initiate() {
+
+        if (this.server) {
+            var self = this;
             this.server.get('/healthcheck',
                 function (req, res, next) {
-                    this.Check(function (err, result) {
+                    self.Check(function (err, result) {
                         if (err) {
                             res.status(500);
                             res.end(err);
@@ -68,7 +69,7 @@ class HealthChecker{
                         }
                     });
                 });
-        }else{
+        } else {
 
 
         }
@@ -76,12 +77,13 @@ class HealthChecker{
     }
 
     Check(cb) {
-        async.parallel(this.functions, function(err, results) {
+        async.parallel(this.functions, function (err, results) {
             cb(err, results);
 
         });
     };
 
-
 }
+
+module.exports = HealthChecker;
 
