@@ -15,9 +15,9 @@ class HealthChecker {
         this.server = server;
         this.handlers = handlers;
 
-        if (handlers) {
+        if (this.handlers) {
 
-            let {pg: pg, redis: redis} = handlers;
+            let {pg: pg, redis: redis, mongo: mongo} = this.handlers;
             this.functions = [];
 
             if (pg) {
@@ -46,6 +46,22 @@ class HealthChecker {
                     });
 
                 });
+            }
+
+            if (mongo) {
+
+                this.functions.push(function (callback) {
+
+                        if (mongo.readyState === 1) {
+                            callback(null, {});
+                        }
+                        else {
+                            console.log(mongo.readyState);
+                            callback(new Error('mongodb connection error'));
+                        }
+
+                    }
+                )
             }
         }
 
