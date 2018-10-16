@@ -1,6 +1,6 @@
 {
   "name": "dvp-healthcheck",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Public health check module for REDIS, MONGODB, POSTGRESQL, RABBITMQ",
   "main": "DBHealthChecker.js",
   "scripts": {
