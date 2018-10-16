@@ -56,7 +56,6 @@ class HealthChecker {
                             callback(null, {});
                         }
                         else {
-                            console.log(mongo.readyState);
                             callback(new Error('mongodb connection error'));
                         }
 
@@ -83,10 +82,12 @@ class HealthChecker {
                             res.status(200);
                             res.end("healthcheck succeeded");
                         }
+                        return next();
                     });
                 });
         } else {
 
+            throw new Error("Cannot initiate the health check!");
 
         }
 
