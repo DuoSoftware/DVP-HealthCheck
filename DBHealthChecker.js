@@ -17,7 +17,7 @@ class HealthChecker {
 
         if (this.handlers) {
 
-            let {pg: pg, redis: redis, mongo: mongo} = this.handlers;
+            let {pg: pg, redis: redis, mongo: mongo, rabbitmq: rabbitmq} = this.handlers;
             this.functions = [];
 
             if (pg) {
@@ -61,6 +61,21 @@ class HealthChecker {
 
                     }
                 )
+            }
+
+            if (rabbitmq) {
+
+                this.functions.push(function (callback) {
+                    
+                    rabbitmq.on('ready', function () {
+                        //connection success.
+                        callback(null, {});
+                    });
+                    
+                    rabbitmq.on('error', function (error) {
+                        callback(new Error('RabbitMQ connection error'));
+                    });
+                });
             }
         }
 
