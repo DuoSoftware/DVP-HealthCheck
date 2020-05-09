@@ -91,7 +91,7 @@ class HealthChecker {
                     self.Check(function (err, result) {
                         if (err) {
                             res.status(500);
-                            res.send(err);
+                            res.send(err.message || "healthcheck failed");
                         }
                         else {
                             res.status(200);
