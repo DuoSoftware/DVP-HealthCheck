@@ -17,7 +17,7 @@ class HealthChecker {
 
         if (this.handlers) {
 
-            let {pg: pg, redis: redis, mongo: mongo} = this.handlers;
+            let {pg: pg, redis: redis, mongo: mongo, rabbitmq: rabbitmq} = this.handlers;
             this.functions = [];
 
             if (pg) {
@@ -62,6 +62,21 @@ class HealthChecker {
                     }
                 )
             }
+
+            if (rabbitmq) {
+
+                this.functions.push(function (callback) {
+                    
+                    rabbitmq.on('ready', function () {
+                        //connection success.
+                        callback(null, {});
+                    });
+                    
+                    rabbitmq.on('error', function (error) {
+                        callback(new Error('RabbitMQ connection error'));
+                    });
+                });
+            }
         }
 
     }
@@ -76,7 +91,7 @@ class HealthChecker {
                     self.Check(function (err, result) {
                         if (err) {
                             res.status(500);
-                            res.end(err);
+                            res.send(err.message || "healthcheck failed");
                         }
                         else {
                             res.status(200);
